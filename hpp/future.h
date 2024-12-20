@@ -52,14 +52,23 @@ public:
         other.state_ = nullptr;
     }
    
-    void subscribe(std::function<void(tl::expected<T,std::exception_ptr>&&)>callback, const asio::io_context& context){
+    // ! if future is ready will call callback immediately
+    // ? use force async if you want to be sure op is async
+    void subscribe(std::function<void(tl::expected<T,std::exception_ptr>&&)>callback, const asio::io_context& context, bool forceAsync = false){
         if(not state_){throw std::logic_error("use moved future");}
         std::unique_lock lock(state_->mutex_);
         if(state_->used_){throw std::logic_error("future use second time");}
         state_->used_ = true;
         if(state_->valid_){
-            callback(std::move(state_->expected_));
-            return;
+            if(not forceAsync){
+                callback(std::move(state_->expected_));
+            }else{ // ? force async operation
+                asio::post(*const_cast<asio::io_context*>(&context),
+                [callback = std::move(state_->callback_),
+                expected = std::move(state_->expected_)]() mutable{
+                    callback(std::move(expected));
+                });
+            }return;
         }
         state_->context_ = &context;
         state_->callback_ = std::move(callback);
