@@ -1,11 +1,10 @@
 #pragma once
 
-// ! this is your custom methods and contexts
-// ? change this file name to your path to config
+// * #define __cvk_config <cvk_config.hpp>
+// ! this ^ is your custom methods and contexts
+// * you can define this var, if not defined default is cvk_config.hpp
 // * path should be <>
-// #define __cvk_config <cvk_config.hpp>
-// you can define this var, if not defined default is cvk_config.hpp
-// ? method namespace is not essential for work, but required to provide enum contexts
+// ? method namespace in config file is not essential for work, but required to provide enum contexts
 
 #include "hpp/contextsstore.h"
 #include "hpp/defines.h"

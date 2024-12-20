@@ -1,5 +1,10 @@
 #pragma once
 
+#ifndef Unit_Type
+#define Unit_Type
+struct Unit{};
+#endif
+
 //****************************************
 #include <coroutine>
 struct co_gethandle
@@ -12,14 +17,14 @@ struct co_gethandle
 };
 
 //****************************************
-#include "../../hpp/expected"
+#include <hpp/expected>
 using tl::expected;
 using tl::unexpected;
-using expected_te = expected<std::true_type,std::exception_ptr>;
+using expected_ue = expected<Unit,std::exception_ptr>;
 
 
 template <typename... Args>
-struct std::coroutine_traits<expected_te, Args...> {
+struct std::coroutine_traits<expected_ue, Args...> {
     struct promise_type {
         auto get_return_object() { return std::true_type(); }
         std::suspend_never initial_suspend() { return {}; }
