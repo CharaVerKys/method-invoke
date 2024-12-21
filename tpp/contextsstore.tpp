@@ -13,14 +13,6 @@ tl::expected<std::vector<std::function<void(std::stop_token)>>,std::exception_pt
 cvk::ContextsStore<numOfContexts>::registerContexts(Receivers*... receivers) noexcept{
     static_assert(sizeof...(receivers) == numOfContexts, "Invalid number of receivers");
     receivers_ = { receivers... };
-    // ? так всё таки лучше, но проверить на тип не получится сразу, в том смысле что это всё равно template и в ошибку упадёт только на initialization_list в contexts_
-    // std::va_list args;
-    // va_start(args, receivers);
-    // contexts_[0] = receivers;
-    // for(uint i = 1; i<numOfContexts; ++i){
-        // contexts_[i] = va_arg(args,Receiver*);
-    // }
-    // va_end(args);
     return std::vector<std::function<void(std::stop_token)>>();
 }
 
@@ -37,15 +29,6 @@ expected_ue cvk::ContextsStore<numOfContexts>::startContexts(std::vector<std::fu
         std::thread thread(threadWork); // идеально! типы стёрты, токен внутри стёрт, мьютексов и т.п. нет
         threads_[i] = std::move(thread);
     }
-    // bool starting = true;
-    // while(starting){
-        // starting = false;
-        // for(auto& t : threads_){
-            // if(not t.joinable()){
-                // starting = true;
-            // }
-        // }
-    // }
     return {};
 }
 
@@ -61,7 +44,6 @@ template<uint8_t numOfContexts>
 void cvk::ContextsStore<numOfContexts>::wait(){
     for(auto& thread: threads_){
         thread.join();
-        // std::cerr<<"joined\n"; // todo debug
     }
 }
 
