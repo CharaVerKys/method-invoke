@@ -27,3 +27,13 @@ consteval const char* extract_method_name(const char* fullString) { // обяз�
     [&obj](auto&& expect) { \
         return std::invoke(&std::remove_pointer_t<std::remove_reference_t<decltype(obj)>>::method, obj, std::forward<decltype(expect)>(expect)); \
     }
+#define call_this(method) \
+    [this](auto&& expect) { \
+        return std::invoke(&std::remove_pointer_t<decltype(this)>::method, this, std::forward<decltype(expect)>(expect)); \
+    }
+
+#include "expected"
+#include <exception>
+#include <stop_token>
+using expected_ue = tl::expected<Unit,std::exception_ptr>;
+using expected_contextsReg = tl::expected<std::vector<std::function<void(std::stop_token)>>,std::exception_ptr>;
