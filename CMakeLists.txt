@@ -11,4 +11,6 @@ include_directories(
             ${CMAKE_SOURCE_DIR}/asio/asio/include
             )
 
+add_subdirectory(example)
+
 add_subdirectory(tests/future)
