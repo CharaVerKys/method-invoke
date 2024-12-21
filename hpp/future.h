@@ -96,7 +96,7 @@ class promise{
     details::shared_state<T>* state_ = new details::shared_state<T>();
     // * async read-call operation under top-level mutex
     void invoke_Callback(){
-        if(state_->used_ and not state_->context_){
+        if(not state_->used_ and not state_->context_){
             return;
         }
         assert(state_->used_);
@@ -166,18 +166,39 @@ struct FutureAwaiter{
 
     template<class io_context, class F, typename... Args>
 requires std::is_invocable_r<cvk::future<T>, F, Args...>::value
-    and (std::is_same_v<asio::io_context,std::remove_pointer_t<io_context>>
-        or std::is_same_v<asio::io_context, std::remove_reference_t<io_context>>
+    and (std::is_same_v<asio::io_context, std::remove_cv_t<std::remove_pointer_t<io_context>>>
+        or std::is_same_v<asio::io_context, std::remove_cv_t<std::remove_reference_t<io_context>>>
     )
-    FutureAwaiter(io_context& context, F&& func, Args... args)
+    FutureAwaiter(const io_context& context, F&& func, Args... args)
     :future(func(std::forward<Args>(args)...))
     {
-        if constexpr(std::is_same_v<asio::io_context, std::remove_reference_t<io_context>>){
+        if constexpr(std::is_same_v<asio::io_context, std::remove_cv_t<std::remove_reference_t<io_context>>>){
             this->context = &context;
         }else{
             this->context = context;
         }
     }
+
+    template<class io_context, class F, class C, typename... Args>
+requires std::is_invocable_r<cvk::future<T>, F, C, Args...>::value
+    and std::is_pointer<C>::value
+    and requires(F method, C caller, Args... args){
+        (caller->*method)(std::forward<Args>(args)...);
+    }
+    and (std::is_same_v<asio::io_context, std::remove_cv_t<std::remove_pointer_t<io_context>>>
+        or std::is_same_v<asio::io_context, std::remove_cv_t<std::remove_reference_t<io_context>>>
+    )
+    FutureAwaiter(const io_context& context, F&& func, C caller, Args... args)
+    :future((caller->*func)(std::forward<Args>(args)...))
+    {
+        if constexpr(std::is_same_v<asio::io_context, std::remove_cv_t<std::remove_reference_t<io_context>>>){
+            this->context = &context;
+        }else{
+            this->context = context;
+        }
+    }
+
+
     bool await_ready()noexcept{return false;}
     void await_suspend(std::coroutine_handle<>cont){
         future.subscribe([this,cont](tl::expected<T,std::exception_ptr>&& expected){
@@ -195,7 +216,7 @@ requires std::is_invocable_r<cvk::future<T>, F, Args...>::value
 private:
     cvk::future<T> future;
     tl::expected<T,std::exception_ptr> result;
-    asio::io_context* context = nullptr;
+    const asio::io_context* context = nullptr;
 };
 }//? namespace cvk
 
