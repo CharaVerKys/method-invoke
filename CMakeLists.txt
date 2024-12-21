@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED on)
 include_directories(
             ${CMAKE_SOURCE_DIR}/tests/testing
             ${CMAKE_SOURCE_DIR}
-            ${CMAKE_SOURCE_DIR}/asio/include
+            ${CMAKE_SOURCE_DIR}/asio/asio/include
             )
 
 add_subdirectory(tests/future)
