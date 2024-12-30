@@ -20,13 +20,13 @@ namespace method{
         ContextTargets sender; ContextTargets receiver;
         std::string_view method; std::any args;
         tl::expected<T,std::exception_ptr> result;
-        promise<T> promise;
-        future<T> future;
+        promise<T> promise_;
+        future<T> future_;
     };
 
     template<cvk::FutureValue T>
     struct args{
-        promise<T> *promise;
+        promise<T> *promise_;
         std::any other;
     };
 }

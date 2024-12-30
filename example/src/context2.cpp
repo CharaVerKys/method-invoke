@@ -2,7 +2,7 @@
 #include <source_location>
 
 cvk::expected_contextsReg Context2::onAsyncStart(std::vector<std::function<void(std::stop_token)>>&& previousFuncs){
-    std::cout << std::source_location().function_name() <<'\n';
+    std::cout << std::source_location::current().function_name() <<'\n';
 
     regMethod(this,&Context2::secondInvoke);
     regMethod(this,&Context2::request_stop);
@@ -15,7 +15,7 @@ cvk::expected_contextsReg Context2::onAsyncStart(std::vector<std::function<void(
 
 
 void Context2::asyncStart(std::stop_token token){
-    std::cout << std::source_location().function_name() <<'\n';
+    std::cout << std::source_location::current().function_name() <<'\n';
     stop_token = token;
 }
 

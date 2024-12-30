@@ -36,4 +36,6 @@ consteval const char* extract_method_name(const char* fullString) { // обяз�
 #include <exception>
 #include <stop_token>
 using expected_ue = tl::expected<Unit,std::exception_ptr>;
+namespace cvk {
 using expected_contextsReg = tl::expected<std::vector<std::function<void(std::stop_token)>>,std::exception_ptr>;
+}// ? namespace cvk

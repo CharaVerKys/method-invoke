@@ -3,7 +3,7 @@
 #include <coroutine_traits.hpp>
 
 cvk::expected_contextsReg Context3::onAsyncStart(std::vector<std::function<void(std::stop_token)>>&& previousFuncs){
-    std::cout << std::source_location().function_name() <<'\n';
+    std::cout << std::source_location::current().function_name() <<'\n';
     
     regMethod(this,&Context3::firstInvoke);
     regMethod(this,&Context3::justAsync);
@@ -15,12 +15,12 @@ cvk::expected_contextsReg Context3::onAsyncStart(std::vector<std::function<void(
 }
 
 void Context3::asyncStart(std::stop_token token){
-    std::cout << std::source_location().function_name() <<'\n';
+    std::cout << std::source_location::current().function_name() <<'\n';
     stop_token = token;
 }
 
 void Context3::firstInvoke(std::any any_ptr_promise_unit){
-    std::cout << std::source_location().function_name() <<'\n';
+    std::cout << std::source_location::current().function_name() <<'\n';
     std::shared_ptr<cvk::promise<Unit>> promise = std::any_cast<std::shared_ptr<cvk::promise<Unit>>>(std::move(any_ptr_promise_unit));
     
     traitedCoroutine();
@@ -34,7 +34,7 @@ void Context3::firstInvoke(std::any any_ptr_promise_unit){
 }
 
 void Context3::justAsync(std::any function_void_void){
-    std::cout << std::source_location().function_name() <<'\n';
+    std::cout << std::source_location::current().function_name() <<'\n';
     std::any_cast<std::function<void()>>(std::move(function_void_void))();
 }
 

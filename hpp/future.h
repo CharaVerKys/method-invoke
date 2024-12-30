@@ -96,7 +96,8 @@ class promise{
     details::shared_state<T>* state_ = new details::shared_state<T>();
     // * async read-call operation under top-level mutex
     void invoke_Callback(){
-        if(not state_->used_ and not state_->context_){
+        // if not used or if used and blocked on get
+        if(not state_->used_ or not state_->context_){
             return;
         }
         assert(state_->used_);
