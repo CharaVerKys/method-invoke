@@ -116,7 +116,7 @@ public:
     promise(){}
     promise(promise&&o):state_(o.state_){o.state_ = nullptr;}
     void operator=(promise&&other){
-        if(state_->allive.load(std::memory_order_acquire)) not_eq 1){
+        if(state_->alive_.load(std::memory_order_acquire) not_eq 1){
             throw std::logic_error("future still alive, cant move to this promise");
         }
         delete state_;
